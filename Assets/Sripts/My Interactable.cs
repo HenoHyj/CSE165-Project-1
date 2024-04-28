@@ -8,12 +8,12 @@ public class MyInteractable : MonoBehaviour
 {
     // Start is called before the first frame update
 
-    void selectObj()
+    public void SelectObj()
     {
-
+        //High
     }
 
-    void disSelectObj()
+    public void DisSelectObj()
     {
 
     }

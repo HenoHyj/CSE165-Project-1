@@ -13,12 +13,14 @@ public class LeftRayCast : MonoBehaviour
     [SerializeField] float maxDist;
     [SerializeField] LineRenderer lineRend;
     [SerializeField] LayerMask layerMask;
-    [SerializeField] XRNode leftHandNode; 
+    [SerializeField] XRNode leftHandNode;
+    [SerializeField] GameObject player;
     //[SerializeField] XRNode leftHandNode;
     private List<InputDevice> devices = new List<InputDevice>();
     InputDevice leftControler;
     XRSimpleInteractable curInteractable;
     // Start is called before the first frame update
+    bool ltriggerstatus;
 
     void getDevice()
     {
@@ -33,6 +35,7 @@ public class LeftRayCast : MonoBehaviour
         {
             getDevice();
         }
+        ltriggerstatus = false;
     }
 
     // Update is called once per frame
@@ -51,21 +54,32 @@ public class LeftRayCast : MonoBehaviour
         if (Physics.Raycast(ray, out rayHit, maxDist, layerMask))
         {
             curInteractable = rayHit.transform.GetComponent<XRSimpleInteractable>();
-            lineRend.enabled = true;
-            lineRend.SetPosition(0, this.transform.position);
             lineRend.SetPosition(1, rayHit.point);
-            lineRend.startColor = Color.white;
-            lineRend.endColor = Color.white;
+            lineRend.startColor = Color.green;
+            lineRend.endColor = Color.green;
 
             //Teleport when left trigger are pressed
             bool leftTriggerPress = false;
-            if (leftControler.TryGetFeatureValue(CommonUsages.triggerButton, out leftTriggerPress) && leftTriggerPress)
+            if (leftControler.TryGetFeatureValue(CommonUsages.triggerButton, out leftTriggerPress) && leftTriggerPress && !ltriggerstatus)
             {
-
+                //update trigger status to prevent teleport more than once
+                ltriggerstatus = true;
                 //curInteractable.SelectObj();
-                lineRend.startColor = Color.white;
-                lineRend.endColor = Color.white;
+                lineRend.startColor = Color.blue;
+                lineRend.endColor = Color.blue;
+
+                // Change player's position
+                Vector3 targetposition;
+                targetposition.x = rayHit.point.x;
+                targetposition.y = player.transform.position.y;
+                targetposition.z = rayHit.point.z;
+
+                player.transform.position = targetposition;
                 Debug.Log("trigger pulled");
+            }
+            if (leftControler.TryGetFeatureValue(CommonUsages.triggerButton, out leftTriggerPress) && !leftTriggerPress && ltriggerstatus)
+            {
+                ltriggerstatus = false;
             }
         }
         else
