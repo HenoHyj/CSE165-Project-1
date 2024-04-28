@@ -6,30 +6,30 @@ using UnityEngine.XR;
 using UnityEngine.XR.Interaction.Toolkit;
 
 
-public class RayCast : MonoBehaviour
+public class LeftRayCast : MonoBehaviour
 {
     Ray ray;
     RaycastHit rayHit;
     [SerializeField] float maxDist;
     [SerializeField] LineRenderer lineRend;
     [SerializeField] LayerMask layerMask;
-    [SerializeField] XRNode rightHandNode; 
+    [SerializeField] XRNode leftHandNode; 
     //[SerializeField] XRNode leftHandNode;
     private List<InputDevice> devices = new List<InputDevice>();
-    InputDevice rightControler;
+    InputDevice leftControler;
     XRSimpleInteractable curInteractable;
     // Start is called before the first frame update
 
     void getDevice()
     {
-        InputDevices.GetDevicesAtXRNode(rightHandNode, devices);
-        rightControler = devices.FirstOrDefault();
+        InputDevices.GetDevicesAtXRNode(leftHandNode, devices);
+        leftControler = devices.FirstOrDefault();
     }
 
     void Start()
     {
         //Debug.Log("initialized");
-        if (!rightControler.isValid)
+        if (!leftControler.isValid)
         {
             getDevice();
         }
@@ -38,7 +38,7 @@ public class RayCast : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!rightControler.isValid)
+        if (!leftControler.isValid)
         {
             getDevice();
         }
@@ -56,26 +56,16 @@ public class RayCast : MonoBehaviour
             lineRend.SetPosition(1, rayHit.point);
             lineRend.startColor = Color.white;
             lineRend.endColor = Color.white;
-            //select item
-            bool rightTriggerPress = false;
-            //Debug.Log("Ray has some hit");
 
-            if (rightControler.TryGetFeatureValue(CommonUsages.triggerButton, out rightTriggerPress) && rightTriggerPress)
+            //Teleport when left trigger are pressed
+            bool leftTriggerPress = false;
+            if (leftControler.TryGetFeatureValue(CommonUsages.triggerButton, out leftTriggerPress) && leftTriggerPress)
             {
 
                 //curInteractable.SelectObj();
                 lineRend.startColor = Color.white;
                 lineRend.endColor = Color.white;
                 Debug.Log("trigger pulled");
-            }
-            //diselect item
-            bool lgriprButtonAction = false;
-            if (rightControler.TryGetFeatureValue(CommonUsages.gripButton, out lgriprButtonAction) && lgriprButtonAction)
-            {
-                //curInteractable.diSelectObj();
-                lineRend.startColor = Color.white;
-                lineRend.endColor = Color.white; ;
-                Debug.Log("grip pulled");
             }
         }
         else
