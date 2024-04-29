@@ -19,15 +19,17 @@ public class RightRayCast : MonoBehaviour
     InputDevice rightControler;
     MyInteractable curInteractable;
     // Start is called before the first frame update
-
+    bool righTriggerholding;
     void getDevice()
     {
         InputDevices.GetDevicesAtXRNode(rightHandNode, devices);
         rightControler = devices.FirstOrDefault();
+        
     }
 
     void Start()
     {
+        righTriggerholding = false;
         //Debug.Log("initialized");
         if (!rightControler.isValid)
         {
@@ -60,22 +62,20 @@ public class RightRayCast : MonoBehaviour
             bool rightTriggerPress = false;
             //Debug.Log("Ray has some hit");
 
-            if (rightControler.TryGetFeatureValue(CommonUsages.triggerButton, out rightTriggerPress) && rightTriggerPress)
+            if (rightControler.TryGetFeatureValue(CommonUsages.triggerButton, out rightTriggerPress) && rightTriggerPress && !righTriggerholding)
             {
-
                 curInteractable.SelectObj();
-                lineRend.startColor = Color.white;
-                lineRend.endColor = Color.white;
+                righTriggerholding = true;
                 Debug.Log("trigger pulled");
             }
+
+            //bool rightGrabAction = false;
             //diselect item
-            bool rightGrabAction = false;
-            if (rightControler.TryGetFeatureValue(CommonUsages.gripButton, out rightGrabAction) && rightGrabAction)
+            if (rightControler.TryGetFeatureValue(CommonUsages.triggerButton, out rightTriggerPress) && !rightTriggerPress && righTriggerholding)
             {
-                //curInteractable.diSelectObj();
-                lineRend.startColor = Color.white;
-                lineRend.endColor = Color.white;
-                Debug.Log("grip pulled");
+                curInteractable.DisSelectObj();
+                Debug.Log("trigger released");
+                righTriggerholding = false;
             }
         }
         else
