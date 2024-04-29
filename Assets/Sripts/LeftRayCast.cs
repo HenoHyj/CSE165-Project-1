@@ -17,8 +17,8 @@ public class LeftRayCast : MonoBehaviour
     [SerializeField] LayerMask buttonBed;
     [SerializeField] XRNode leftHandNode;
     [SerializeField] GameObject player;
-    [SerializeField] GameObject chairPrefab;
-    [SerializeField] GameObject bedPrefab;
+    [SerializeField] GameObject prefab1;
+    [SerializeField] GameObject prefab2;
     //[SerializeField] XRNode leftHandNode;
     private List<InputDevice> devices = new List<InputDevice>();
     InputDevice leftControler;
@@ -116,7 +116,7 @@ public class LeftRayCast : MonoBehaviour
                 Vector3 idealSpawnLocation = transform.position;
                 idealSpawnLocation.x += transform.forward.x + 0.2f;
                 idealSpawnLocation.z += transform.forward.z + 0.2f;
-                Instantiate(chairPrefab, idealSpawnLocation, Quaternion.identity);
+                Instantiate(prefab1, idealSpawnLocation, Quaternion.identity);
 
                 //Debug.Log("trigger pulled");
             }
@@ -146,7 +146,7 @@ public class LeftRayCast : MonoBehaviour
                 Vector3 idealSpawnLocation = transform.position;
                 idealSpawnLocation.x += transform.forward.x + 0.2f;
                 idealSpawnLocation.z += transform.forward.z + 0.2f;
-                Instantiate(bedPrefab, idealSpawnLocation, Quaternion.identity);
+                Instantiate(prefab2, idealSpawnLocation, Quaternion.identity);
 
                 Debug.Log("trigger pulled");
             }
