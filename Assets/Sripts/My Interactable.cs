@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.XR;
 using UnityEngine.XR.Interaction.Toolkit;
@@ -39,6 +40,32 @@ public class MyInteractable : MonoBehaviour
         }
         
         //this.transform.SetParent(prevParent.transform);
+    }
+
+    public void GrabObj()
+    {
+        if (renderer != null)
+        {
+            renderer.material.color = Color.yellow;
+        }
+        this.transform.SetParent(controller.transform);
+        Vector3 targetposition;
+        targetposition.x = this.transform.parent.position.x;
+        targetposition.y = this.transform.parent.position.x;
+        targetposition.z = this.transform.parent.position.x;
+        this.transform.position = targetposition;
+    }
+
+    public void ReleaseGrabObj()
+    {
+        if (renderer != null)
+        {
+            renderer.material.color = originalColor;
+        }
+        if (this.transform.parent != prevParent)
+        {
+            this.transform.SetParent(prevParent.transform);
+        }
     }
 
     void Start()

@@ -20,6 +20,7 @@ public class RightRayCast : MonoBehaviour
     MyInteractable curInteractable;
     // Start is called before the first frame update
     bool righTriggerholding;
+    bool righGripHolding;
     void getDevice()
     {
         InputDevices.GetDevicesAtXRNode(rightHandNode, devices);
@@ -30,6 +31,7 @@ public class RightRayCast : MonoBehaviour
     void Start()
     {
         righTriggerholding = false;
+        righGripHolding = false;
         //Debug.Log("initialized");
         if (!rightControler.isValid)
         {
@@ -69,13 +71,29 @@ public class RightRayCast : MonoBehaviour
                 Debug.Log("trigger pulled");
             }
 
-            //bool rightGrabAction = false;
+            
             //diselect item
             if (rightControler.TryGetFeatureValue(CommonUsages.triggerButton, out rightTriggerPress) && !rightTriggerPress && righTriggerholding)
             {
                 curInteractable.DisSelectObj();
                 Debug.Log("trigger released");
                 righTriggerholding = false;
+            }
+
+            //Grab Action
+            bool rightGripAction = false;
+            if (rightControler.TryGetFeatureValue(CommonUsages.gripButton, out rightGripAction) && rightGripAction && !righGripHolding)
+            {
+                curInteractable.GrabObj();
+                Debug.Log("Grab holding");
+                righGripHolding = true;
+            }
+
+            if (rightControler.TryGetFeatureValue(CommonUsages.gripButton, out rightGripAction) && !rightGripAction && righGripHolding)
+            {
+                curInteractable.ReleaseGrabObj();
+                Debug.Log("Grab Released");
+                righGripHolding = false;
             }
         }
         else
