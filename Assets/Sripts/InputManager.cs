@@ -15,6 +15,7 @@ public class InputManager : MonoBehaviour
     private InputDevice LControler;
     private InputDevice RControler;
 
+    //output
     public bool rightTrigger;
     public bool leftTrigger;
     public bool bothTrigger;
@@ -22,10 +23,19 @@ public class InputManager : MonoBehaviour
     public bool leftGrip;
     public bool bothGrip;
 
+    //input
     bool ltriggerButtonAction = false;
     bool rtriggerButtonAction = false;
     bool rGripButtonAction = false;
     bool lGripButtonAction = false;
+
+    //logic
+
+    bool prevLefttriggerButtonPressed = false;
+    bool prevRighttriggerButtonPressed = false;
+    bool prevLeftGripButtonPressed = false;
+    bool prevRightGripButtonPressed = false;
+
     void getDevice()
     {
         //get left controller

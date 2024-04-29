@@ -18,6 +18,7 @@ public class RightRayCast : MonoBehaviour
     private List<InputDevice> devices = new List<InputDevice>();
     InputDevice rightControler;
     MyInteractable curInteractable;
+    MyInteractable holdingInteractable;
     // Start is called before the first frame update
     bool righTriggerholding;
     bool righGripHolding;
@@ -52,6 +53,7 @@ public class RightRayCast : MonoBehaviour
         lineRend.enabled = true;
         lineRend.SetPosition(0, transform.position);
         lineRend.SetPosition(1, transform.position + maxDist * transform.forward);
+        
         if (Physics.Raycast(ray, out rayHit, maxDist, layerMask))
         {
             curInteractable = rayHit.transform.GetComponent<MyInteractable>();
@@ -60,15 +62,16 @@ public class RightRayCast : MonoBehaviour
             lineRend.SetPosition(1, rayHit.point);
             lineRend.startColor = Color.white;
             lineRend.endColor = Color.white;
+
             //select item
             bool rightTriggerPress = false;
-            //Debug.Log("Ray has some hit");
+            bool rightGripAction = false;
 
             if (rightControler.TryGetFeatureValue(CommonUsages.triggerButton, out rightTriggerPress) && rightTriggerPress && !righTriggerholding)
             {
                 curInteractable.SelectObj();
                 righTriggerholding = true;
-                Debug.Log("trigger pulled");
+                //Debug.Log("trigger pulled");
             }
 
             
@@ -76,30 +79,34 @@ public class RightRayCast : MonoBehaviour
             if (rightControler.TryGetFeatureValue(CommonUsages.triggerButton, out rightTriggerPress) && !rightTriggerPress && righTriggerholding)
             {
                 curInteractable.DisSelectObj();
-                Debug.Log("trigger released");
+                //Debug.Log("trigger released");
                 righTriggerholding = false;
             }
 
             //Grab Action
-            bool rightGripAction = false;
             if (rightControler.TryGetFeatureValue(CommonUsages.gripButton, out rightGripAction) && rightGripAction && !righGripHolding)
             {
                 curInteractable.GrabObj();
-                Debug.Log("Grab holding");
+                //Debug.Log("Grab holding");
+                holdingInteractable = curInteractable;
                 righGripHolding = true;
             }
+            
 
-            if (rightControler.TryGetFeatureValue(CommonUsages.gripButton, out rightGripAction) && !rightGripAction && righGripHolding)
-            {
-                curInteractable.ReleaseGrabObj();
-                Debug.Log("Grab Released");
-                righGripHolding = false;
-            }
         }
         else
         {
             lineRend.startColor = Color.red;
             lineRend.endColor = Color.red;
+
+            bool rightGripAction = false;
+            if (rightControler.TryGetFeatureValue(CommonUsages.gripButton, out rightGripAction) && !rightGripAction && righGripHolding)
+            {
+                holdingInteractable.ReleaseGrabObj();
+                Debug.Log("Grab Released");
+                holdingInteractable = null;
+                righGripHolding = false;
+            }
         }
 
     }

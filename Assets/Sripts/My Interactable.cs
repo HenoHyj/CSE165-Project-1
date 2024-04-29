@@ -25,6 +25,7 @@ public class MyInteractable : MonoBehaviour
         {
             renderer.material.color = Color.yellow;
         }
+        this.GetComponent<Rigidbody>().isKinematic = true;
         this.transform.SetParent(controller.transform);
     }
 
@@ -34,12 +35,11 @@ public class MyInteractable : MonoBehaviour
         {
             renderer.material.color = originalColor;
         }
+        this.GetComponent<Rigidbody>().isKinematic = false;
         if (this.transform.parent != prevParent)
         {
             this.transform.SetParent(prevParent.transform);
         }
-        
-        //this.transform.SetParent(prevParent.transform);
     }
 
     public void GrabObj()
@@ -49,11 +49,14 @@ public class MyInteractable : MonoBehaviour
             renderer.material.color = Color.yellow;
         }
         this.transform.SetParent(controller.transform);
+        this.GetComponent<Rigidbody>().isKinematic = true;
         Vector3 targetposition;
         targetposition.x = this.transform.parent.position.x;
-        targetposition.y = this.transform.parent.position.x;
-        targetposition.z = this.transform.parent.position.x;
+        targetposition.y = this.transform.parent.position.y;
+        targetposition.z = this.transform.parent.position.z;
+        targetposition += 0.1f * this.transform.parent.forward;
         this.transform.position = targetposition;
+
     }
 
     public void ReleaseGrabObj()
@@ -62,10 +65,12 @@ public class MyInteractable : MonoBehaviour
         {
             renderer.material.color = originalColor;
         }
+        this.GetComponent<Rigidbody>().isKinematic = false;
         if (this.transform.parent != prevParent)
         {
             this.transform.SetParent(prevParent.transform);
         }
+        
     }
 
     void Start()

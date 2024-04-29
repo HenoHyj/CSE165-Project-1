@@ -13,8 +13,10 @@ public class LeftRayCast : MonoBehaviour
     [SerializeField] float maxDist;
     [SerializeField] LineRenderer lineRend;
     [SerializeField] LayerMask layerMask;
+    [SerializeField] LayerMask buttons;
     [SerializeField] XRNode leftHandNode;
     [SerializeField] GameObject player;
+    [SerializeField] GameObject testPrefab;
     //[SerializeField] XRNode leftHandNode;
     private List<InputDevice> devices = new List<InputDevice>();
     InputDevice leftControler;
@@ -95,6 +97,35 @@ public class LeftRayCast : MonoBehaviour
                 ltriggerstatus = false;
             }
         }
+
+        else if (Physics.Raycast(ray, out rayHit, maxDist, buttons))
+        {
+            curInteractable = rayHit.transform.GetComponent<XRSimpleInteractable>();
+            lineRend.SetPosition(1, rayHit.point);
+            lineRend.startColor = Color.blue;
+            lineRend.endColor = Color.blue;
+
+            //Teleport when left trigger are pressed
+            bool leftTriggerPress = false;
+            if (leftControler.TryGetFeatureValue(CommonUsages.triggerButton, out leftTriggerPress) && leftTriggerPress && !ltriggerstatus)
+            {
+                ltriggerstatus = true;
+
+                // Instantiate corresponding object (sample here)!
+                Vector3 idealSpawnLocation = transform.position;
+                idealSpawnLocation.x += transform.forward.x + 0.2f;
+                idealSpawnLocation.z += transform.forward.z + 0.2f;
+                Instantiate(testPrefab, idealSpawnLocation, Quaternion.identity);
+
+                Debug.Log("trigger pulled");
+            }
+
+            if (leftControler.TryGetFeatureValue(CommonUsages.triggerButton, out leftTriggerPress) && !leftTriggerPress && ltriggerstatus)
+            {
+                ltriggerstatus = false;
+            }
+        }
+
         else
         {
             lineRend.startColor = Color.red;
