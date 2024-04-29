@@ -13,10 +13,12 @@ public class LeftRayCast : MonoBehaviour
     [SerializeField] float maxDist;
     [SerializeField] LineRenderer lineRend;
     [SerializeField] LayerMask layerMask;
-    [SerializeField] LayerMask buttons;
+    [SerializeField] LayerMask buttonChair;
+    [SerializeField] LayerMask buttonBed;
     [SerializeField] XRNode leftHandNode;
     [SerializeField] GameObject player;
-    [SerializeField] GameObject testPrefab;
+    [SerializeField] GameObject chairPrefab;
+    [SerializeField] GameObject bedPrefab;
     //[SerializeField] XRNode leftHandNode;
     private List<InputDevice> devices = new List<InputDevice>();
     InputDevice leftControler;
@@ -50,7 +52,7 @@ public class LeftRayCast : MonoBehaviour
         {
             getDevice();
         }
-        //Debug.Log("I get here");
+
         ray = new Ray(transform.position, transform.forward);
         lineRend.SetVertexCount(2);
         lineRend.enabled = true;
@@ -81,8 +83,6 @@ public class LeftRayCast : MonoBehaviour
                 targetposition.y = player.transform.position.y;
                 targetposition.z = rayHit.point.z;
 
-
-                Debug.Log("trigger pulled");
             }
 
             if (leftControler.TryGetFeatureValue(CommonUsages.triggerButton, out leftTriggerPress) && !leftTriggerPress && ltriggerstatus)
@@ -98,7 +98,8 @@ public class LeftRayCast : MonoBehaviour
             }
         }
 
-        else if (Physics.Raycast(ray, out rayHit, maxDist, buttons))
+        //Spawn the Fist Object
+        else if (Physics.Raycast(ray, out rayHit, maxDist, buttonChair))
         {
             curInteractable = rayHit.transform.GetComponent<XRSimpleInteractable>();
             lineRend.SetPosition(1, rayHit.point);
@@ -115,13 +116,44 @@ public class LeftRayCast : MonoBehaviour
                 Vector3 idealSpawnLocation = transform.position;
                 idealSpawnLocation.x += transform.forward.x + 0.2f;
                 idealSpawnLocation.z += transform.forward.z + 0.2f;
-                Instantiate(testPrefab, idealSpawnLocation, Quaternion.identity);
+                Instantiate(chairPrefab, idealSpawnLocation, Quaternion.identity);
+
+                //Debug.Log("trigger pulled");
+            }
+
+            if (leftControler.TryGetFeatureValue(CommonUsages.triggerButton, out leftTriggerPress) && !leftTriggerPress && ltriggerstatus)
+            {
+                ltriggerstatus = false;
+            }
+        }
+
+
+        //Spawn Second Object
+        else if (Physics.Raycast(ray, out rayHit, maxDist, buttonBed))
+        {
+            curInteractable = rayHit.transform.GetComponent<XRSimpleInteractable>();
+            lineRend.SetPosition(1, rayHit.point);
+            lineRend.startColor = Color.blue;
+            lineRend.endColor = Color.blue;
+
+            //Teleport when left trigger are pressed
+            bool leftTriggerPress = false;
+            if (leftControler.TryGetFeatureValue(CommonUsages.triggerButton, out leftTriggerPress) && leftTriggerPress && !ltriggerstatus)
+            {
+                ltriggerstatus = true;
+
+                // Instantiate corresponding object (sample here)!
+                Vector3 idealSpawnLocation = transform.position;
+                idealSpawnLocation.x += transform.forward.x + 0.2f;
+                idealSpawnLocation.z += transform.forward.z + 0.2f;
+                Instantiate(bedPrefab, idealSpawnLocation, Quaternion.identity);
 
                 Debug.Log("trigger pulled");
             }
 
             if (leftControler.TryGetFeatureValue(CommonUsages.triggerButton, out leftTriggerPress) && !leftTriggerPress && ltriggerstatus)
             {
+
                 ltriggerstatus = false;
             }
         }

@@ -73,6 +73,18 @@ public class MyInteractable : MonoBehaviour
         
     }
 
+    public void Scale()
+    {
+        if (renderer != null)
+        {
+            renderer.material.color = Color.yellow;
+        }
+        // this.transform.SetParent(controller.transform);
+        Vector3 scaleChange = new Vector3(0.2f, 0.2f, 0.2f);
+
+        this.transform.localScale += scaleChange;
+    }
+
     void Start()
     {
         renderer = GetComponent<Renderer>();

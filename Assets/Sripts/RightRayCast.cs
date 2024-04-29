@@ -14,27 +14,37 @@ public class RightRayCast : MonoBehaviour
     [SerializeField] LineRenderer lineRend;
     [SerializeField] LayerMask layerMask;
     [SerializeField] XRNode rightHandNode; 
-    //[SerializeField] XRNode leftHandNode;
+    [SerializeField] XRNode leftHandNode;
     private List<InputDevice> devices = new List<InputDevice>();
     InputDevice rightControler;
+    InputDevice leftControler;
     MyInteractable curInteractable;
     MyInteractable holdingInteractable;
+
     // Start is called before the first frame update
     bool righTriggerholding;
-    bool righGripHolding;
+    bool rightGripHolding;
+    bool leftGripHolding;
     void getDevice()
     {
         InputDevices.GetDevicesAtXRNode(rightHandNode, devices);
         rightControler = devices.FirstOrDefault();
-        
+
+        InputDevices.GetDevicesAtXRNode(leftHandNode, devices);
+        leftControler = devices.FirstOrDefault();
     }
 
     void Start()
     {
         righTriggerholding = false;
-        righGripHolding = false;
-        //Debug.Log("initialized");
+        rightGripHolding = false;
+        leftGripHolding = false;
+
         if (!rightControler.isValid)
+        {
+            getDevice();
+        }
+        if (!leftControler.isValid)
         {
             getDevice();
         }
@@ -84,14 +94,30 @@ public class RightRayCast : MonoBehaviour
             }
 
             //Grab Action
-            if (rightControler.TryGetFeatureValue(CommonUsages.gripButton, out rightGripAction) && rightGripAction && !righGripHolding)
+            if (rightControler.TryGetFeatureValue(CommonUsages.gripButton, out rightGripAction) && rightGripAction && !rightGripHolding)
             {
                 curInteractable.GrabObj();
                 //Debug.Log("Grab holding");
                 holdingInteractable = curInteractable;
-                righGripHolding = true;
+                rightGripHolding = true;
             }
-            
+
+            //Detect Left Grab Action
+            bool leftGripAction = false;
+            if (leftControler.TryGetFeatureValue(CommonUsages.gripButton, out leftGripAction) && leftGripAction && !leftGripHolding && rightGripHolding)
+            {
+                holdingInteractable.Scale();
+                Debug.Log("Left Grab holding");
+                leftGripHolding = true;
+            }
+
+            if (leftControler.TryGetFeatureValue(CommonUsages.gripButton, out leftGripAction) && !leftGripAction && leftGripHolding && rightGripHolding)
+            {
+
+                Debug.Log("Left Grab Released");
+                leftGripHolding = false;
+            }
+
 
         }
         else
@@ -100,12 +126,12 @@ public class RightRayCast : MonoBehaviour
             lineRend.endColor = Color.red;
 
             bool rightGripAction = false;
-            if (rightControler.TryGetFeatureValue(CommonUsages.gripButton, out rightGripAction) && !rightGripAction && righGripHolding)
+            if (rightControler.TryGetFeatureValue(CommonUsages.gripButton, out rightGripAction) && !rightGripAction && rightGripHolding)
             {
                 holdingInteractable.ReleaseGrabObj();
-                Debug.Log("Grab Released");
+                //Debug.Log("Grab Released");
                 holdingInteractable = null;
-                righGripHolding = false;
+                rightGripHolding = false;
             }
         }
 
