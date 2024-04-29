@@ -22,6 +22,8 @@ public class LeftRayCast : MonoBehaviour
     // Start is called before the first frame update
     bool ltriggerstatus;
 
+    Vector3 targetposition;
+
     void getDevice()
     {
         InputDevices.GetDevicesAtXRNode(leftHandNode, devices);
@@ -36,6 +38,7 @@ public class LeftRayCast : MonoBehaviour
             getDevice();
         }
         ltriggerstatus = false;
+        targetposition = new Vector3(0, 0, 0);
     }
 
     // Update is called once per frame
@@ -51,6 +54,8 @@ public class LeftRayCast : MonoBehaviour
         lineRend.enabled = true;
         lineRend.SetPosition(0, transform.position);
         lineRend.SetPosition(1, transform.position + maxDist * transform.forward);
+
+
         if (Physics.Raycast(ray, out rayHit, maxDist, layerMask))
         {
             curInteractable = rayHit.transform.GetComponent<XRSimpleInteractable>();
@@ -69,16 +74,24 @@ public class LeftRayCast : MonoBehaviour
                 lineRend.endColor = Color.blue;
 
                 // Change player's position
-                Vector3 targetposition;
+
                 targetposition.x = rayHit.point.x;
                 targetposition.y = player.transform.position.y;
                 targetposition.z = rayHit.point.z;
 
-                player.transform.position = targetposition;
+
                 Debug.Log("trigger pulled");
             }
+
             if (leftControler.TryGetFeatureValue(CommonUsages.triggerButton, out leftTriggerPress) && !leftTriggerPress && ltriggerstatus)
             {
+
+                Vector3 targetRotation;
+                targetRotation = transform.rotation.eulerAngles;
+                targetRotation.x = 0;
+                targetRotation.z = 0;
+                player.transform.rotation = Quaternion.Euler(targetRotation);
+                player.transform.position = targetposition;
                 ltriggerstatus = false;
             }
         }
